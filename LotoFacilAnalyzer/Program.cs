@@ -315,6 +315,8 @@ caso não informe os números errados todos os números válidos serão permutad
                         return "Exemplo: exportar arquivo nomeArquivo.csv tipo [jogo|concurso|calculo]";
                     case "listar":
                         return "Exemplo: listar tipo [jogo|concurso|calculo]";
+                    case "forcaBruta":
+                        return "Exemplo: forcaBruta [palpites 500]";
                     case "sair":
                         return "Exemplo: sair";
                     case "ajuda":
@@ -329,9 +331,10 @@ caso não informe os números errados todos os números válidos serão permutad
 2.)gerar: Gera jogos com permutações
 3.)calcular: Cruza ganhos e gastos dos jogos gerados com os concursos importados
 4.)exportar: exporta calculos, jogos e concursos para CSV
-5.)exibir: mostra calculos, jogos e concursos em tela
-6.)sair: sai deste programa
-7.)ajuda: exibe ajuda de um determinado comando ex: ajuda gerar";
+5.)listar: mostra calculos, jogos e concursos em tela
+6.)forcaBruta: encontra a sequencia de 5 números errados mais lucrativa
+7.)sair: sai deste programa
+8.)ajuda: exibe ajuda de um determinado comando ex: ajuda gerar";
             }
         }
 
