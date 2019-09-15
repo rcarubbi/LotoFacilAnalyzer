@@ -321,6 +321,8 @@ caso não informe os números errados todos os números válidos serão permutad
                         return "Exemplo: listar tipo [jogo|concurso|calculo]";
                     case "forcaBruta":
                         return "Exemplo: forcaBruta [palpites 500]";
+                    case "contarOcorrencias":
+                        return "Exemplo: contarOcorrencias";
                     case "sair":
                         return "Exemplo: sair";
                     case "ajuda":
@@ -337,8 +339,9 @@ caso não informe os números errados todos os números válidos serão permutad
 4.)exportar: exporta calculos, jogos e concursos para CSV
 5.)listar: mostra calculos, jogos e concursos em tela
 6.)forcaBruta: encontra a sequencia de 5 números errados mais lucrativa
-7.)sair: sai deste programa
-8.)ajuda: exibe ajuda de um determinado comando ex: ajuda gerar";
+7.)contarOcorrencias: conta quais sequencias de 5 números menos sairam nos concursos importados
+8.)sair: sai deste programa
+9.)ajuda: exibe ajuda de um determinado comando ex: ajuda gerar";
             }
         }
 
