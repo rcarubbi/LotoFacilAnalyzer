@@ -444,7 +444,7 @@ namespace LotoFacilAnalyzer
             return (count == 0);
         }
 
-        private IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> items, int count)
+        public IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> items, int count)
         {
             int i = 0;
             foreach (var item in items)

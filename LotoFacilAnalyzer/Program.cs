@@ -40,43 +40,7 @@ namespace LotoFacilAnalyzer
             } while (!quit);
         }
 
-        //    List<OcorrenciaGrupo> ocorrencias = new List<OcorrenciaGrupo>();
-        //    var concursos = ImportarConcursos();
-        //    var filtro = concursos.Where(c => c.Data >= new DateTime(2019, 7, 11));
-        //    var qtdConcursos = filtro.Count();
-        //    Console.WriteLine($"Numero de concursos: {qtdConcursos}");
-        //    foreach (var item in filtro)
-        //    {
-        //        var naoSairam = Parametros.Numeros.Except(item.Bolas);
-        //        var grupos = GetPermutations(naoSairam, 5);
 
-        //        foreach (var grupo in grupos)
-        //        {
-        //            var key = string.Join(",", grupo);
-        //            var ocorrencia = ocorrencias.SingleOrDefault(x => x.key == key);
-        //            if (ocorrencia == null)
-        //            {
-        //                ocorrencias.Add(new OcorrenciaGrupo
-        //                {
-        //                    key = key,
-        //                    Count = 1
-        //                });
-        //            }
-        //            else
-        //            {
-        //                ocorrencias.Find(o => o.key == key).Count++;
-        //            }
-        //        }
-
-        //    }
-
-        //    var menoresOcorrencias = ocorrencias.OrderByDescending(x => x.Count).Take(10);
-        //    foreach (var menorOcorrencia in menoresOcorrencias)
-        //    {
-        //        Console.WriteLine($"{menorOcorrencia.key} não saiu {menorOcorrencia.Count} vezes");
-        //    }
-        //    Console.ReadKey();
-        //}
 
         private static string Interpretar(string comando, List<string> parametros, ref bool quit)
         {
@@ -95,15 +59,55 @@ namespace LotoFacilAnalyzer
                     return InterpretarListar(parametros);
                 case "forcaBruta":
                     return InterpretarForcaBruta(parametros);
+                case "contarOcorrencias":
+                    return InterpretarContarOcorrencias(parametros);
                 case "sair":
                     quit = true;
                     return string.Empty;
                 case "ajuda":
                     return InterpretarAjuda(parametros);
+
                 default:
                     return "Comando inválido";
             }
 
+        }
+
+        private static string InterpretarContarOcorrencias(List<string> parametros)
+        {
+            Console.WriteLine("Contando...");
+            var gerador = new Gerador(false, false, false, false);
+            var ocorrencias = new List<OcorrenciaGrupo>();
+            foreach (var concurso in _concursos)
+            {
+                var naoSairam = Parametro.Numeros.Except(concurso.Bolas);
+                var grupos = gerador.GetPermutations(naoSairam, 5);
+
+                foreach (var grupo in grupos)
+                {
+                    var key = string.Join(",", grupo);
+                    var ocorrencia = ocorrencias.SingleOrDefault(x => x.key == key);
+                    if (ocorrencia == null)
+                    {
+                        ocorrencias.Add(new OcorrenciaGrupo
+                        {
+                            key = key,
+                            Count = 1
+                        });
+                    }
+                    else
+                    {
+                        ocorrencias.Find(o => o.key == key).Count++;
+                    }
+                }
+            }
+
+            var menoresOcorrencias = ocorrencias.OrderByDescending(x => x.Count).Take(10);
+            foreach (var menorOcorrencia in menoresOcorrencias)
+            {
+                Console.WriteLine($"{menorOcorrencia.key} não saiu {menorOcorrencia.Count} vezes");
+            }
+            return $"{menoresOcorrencias.Count()} ocorrências retornadas";
         }
 
         private static string InterpretarForcaBruta(List<string> parametros)
@@ -236,7 +240,7 @@ namespace LotoFacilAnalyzer
             var nomeArquivo = "dados.csv";
 
             var parametroNomeArquivo = LerParametroComArgumentos(parametros, "arquivo", (arg) => nomeArquivo = LerValorArgumentoString(arg, "Informe o nome do arquivo"));
-             
+
             var parametroTipo = LerParametroComArgumentos(parametros, "tipo",
                 (arg) => tipo = LerValorArgumentoDominio(arg,
                 new string[] { "concurso", "calculo", "jogo" },
@@ -458,7 +462,7 @@ caso não informe os números errados todos os números válidos serão permutad
         {
             return parametros.FirstOrDefault(x => x.Equals(nomeParametro)) != null;
         }
-         
+
         private static T LerValorArgumento<T>(string arg, string mensagemArgumentoInvalido, string mensagemArgumentoNaoEncontrado) where T : struct
         {
             if (string.IsNullOrEmpty(arg)) throw new ApplicationException(mensagemArgumentoNaoEncontrado);
