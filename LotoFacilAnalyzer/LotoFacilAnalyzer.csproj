@@ -33,15 +33,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Carubbi.CurrencyWriter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Carubbi.CurrencyWriter.1.0.0.0\lib\net45\Carubbi.CurrencyWriter.dll</HintPath>
+    </Reference>
     <Reference Include="Carubbi.Extensions, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Carubbi.Extensions.1.2.3\lib\net462\Carubbi.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Carubbi.Google.TTS, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Carubbi.Google.TTS.1.1.0.0\lib\net472\Carubbi.Google.TTS.dll</HintPath>
     </Reference>
     <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.9.0\lib\net35\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Concurso.cs" />
+    <Compile Include="Ditador.cs" />
     <Compile Include="Exportador.cs" />
     <Compile Include="Importador.cs" />
     <Compile Include="Linha.cs" />

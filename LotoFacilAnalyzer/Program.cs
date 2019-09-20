@@ -61,9 +61,13 @@ namespace LotoFacilAnalyzer
                     return InterpretarForcaBruta(parametros);
                 case "contarOcorrencias":
                     return InterpretarContarOcorrencias(parametros);
+                case "ditar":
+                    return InterpretarDitar(parametros);
                 case "sair":
                     quit = true;
                     return string.Empty;
+                case "limpar":
+                    return InterpretarLimpar(parametros);
                 case "ajuda":
                     return InterpretarAjuda(parametros);
 
@@ -71,6 +75,39 @@ namespace LotoFacilAnalyzer
                     return "Comando inválido";
             }
 
+        }
+
+        private static string InterpretarDitar(List<string> parametros)
+        {
+            var qtdNumeros = 4;
+            var intervalo = 0.5M;
+            LerParametroComArgumentos(parametros, "grupo",
+                (arg) => qtdNumeros = LerValorArgumento<int>(arg, "A quantidade de números deve ser numérica", "Defina uma quantidade de números para serem ditados em sequencia"));
+            
+            LerParametroComArgumentos(parametros, "intervalo",
+                (arg) => intervalo = LerValorArgumento<decimal>(arg, "O intervalo de pausa deve ser numérico", "Defina um intervalo de pausa em segundos entre os grupos"));
+
+            Console.WriteLine("Vou começar a ditar, digite esq para parar e a cada cartela pressione espaço para continuar...");
+            var ditador = new Ditador(qtdNumeros, intervalo);
+            ditador.OnCartelaEnded += Ditador_OnCartelaEnded;
+            ditador.OnGrupoBolasCantado += Ditador_OnGrupoBolasCantado; ; ;
+            
+            return ditador.Ditar(_jogos) ? $"{_jogos.Count()} jogos cantados" : "Ação cancelada";
+        }
+
+        private static void Ditador_OnGrupoBolasCantado(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = Console.KeyAvailable && Console.ReadKey().Key == ConsoleKey.Escape;
+        }
+
+        private static void Ditador_OnCartelaEnded(object sender, EventArgs e)
+        {
+            Console.WriteLine("Digite espaço para próxima cartela ou esq para parar");
+            ConsoleKey key;
+            do
+            {
+                key = Console.ReadKey().Key;
+            } while (key != ConsoleKey.Spacebar && key != ConsoleKey.Escape);
         }
 
         private static string InterpretarContarOcorrencias(List<string> parametros)
@@ -323,10 +360,14 @@ caso não informe os números errados todos os números válidos serão permutad
                         return "Exemplo: forcaBruta [palpites 500]";
                     case "contarOcorrencias":
                         return "Exemplo: contarOcorrencias";
+                    case "ditar":
+                        return "Exemplo: ditar grupo 4 intervalo 0,5";
                     case "sair":
                         return "Exemplo: sair";
+                    case "limpar":
+                        return "Exemplo: limpar";
                     case "ajuda":
-                        return "Exemplo: ajuda [importar|gerar|calcular|listar|sair|ajuda]";
+                        return "Exemplo: ajuda [importar|gerar|calcular|listar|ditar|contarOcorrencias|forcaBruca|sair|ajuda|limpar]";
                     default:
                         return $"O comando {comando} não existe";
                 }
@@ -340,9 +381,17 @@ caso não informe os números errados todos os números válidos serão permutad
 5.)listar: mostra calculos, jogos e concursos em tela
 6.)forcaBruta: encontra a sequencia de 5 números errados mais lucrativa
 7.)contarOcorrencias: conta quais sequencias de 5 números menos sairam nos concursos importados
-8.)sair: sai deste programa
-9.)ajuda: exibe ajuda de um determinado comando ex: ajuda gerar";
+8.)ditar: dita os jogos gerados em voz alta agrupados de 4 em 4 e com intervalo de meio segundo entre eles por padrão
+9.)sair: sai deste programa
+10.)limpar: limpa a tela
+11.)ajuda: exibe ajuda de um determinado comando ex: ajuda gerar";
             }
+        }
+
+        private static string InterpretarLimpar(List<string> parametros)
+        {
+            Console.Clear();
+            return string.Empty;
         }
 
         private static string InterpretarGerar(List<string> parametros)
