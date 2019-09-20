@@ -31,6 +31,7 @@ namespace LotoFacilAnalyzer
                 if (indiceJogo > 0 && indiceJogo % 3 == 0)
                 {
                     var ea = new CancelEventArgs();
+                    ReproduzirFrase("Próxima cartela");
                     OnCartelaEnded?.Invoke(this, ea);
                     if (ea.Cancel)
                     {

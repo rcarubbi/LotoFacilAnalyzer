@@ -1,6 +1,7 @@
 ﻿using Carubbi.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 namespace LotoFacilAnalyzer
 {
@@ -31,7 +32,7 @@ namespace LotoFacilAnalyzer
                 try
                 {
                     var output = Interpretar(comando, parametros, ref quit);
-                    Console.WriteLine(output);
+                    if (!string.IsNullOrEmpty(output)) Console.WriteLine(output);
                 }
                 catch (Exception ex)
                 {
@@ -87,7 +88,7 @@ namespace LotoFacilAnalyzer
             LerParametroComArgumentos(parametros, "intervalo",
                 (arg) => intervalo = LerValorArgumento<decimal>(arg, "O intervalo de pausa deve ser numérico", "Defina um intervalo de pausa em segundos entre os grupos"));
 
-            Console.WriteLine("Vou começar a ditar, digite esq para parar e a cada cartela pressione espaço para continuar...");
+            Console.WriteLine("Vou começar a ditar, digite esc para parar");
             var ditador = new Ditador(qtdNumeros, intervalo);
             ditador.OnCartelaEnded += Ditador_OnCartelaEnded;
             ditador.OnGrupoBolasCantado += Ditador_OnGrupoBolasCantado; ; ;
@@ -95,19 +96,20 @@ namespace LotoFacilAnalyzer
             return ditador.Ditar(_jogos) ? $"{_jogos.Count()} jogos cantados" : "Ação cancelada";
         }
 
-        private static void Ditador_OnGrupoBolasCantado(object sender, System.ComponentModel.CancelEventArgs e)
+        private static void Ditador_OnGrupoBolasCantado(object sender, CancelEventArgs e)
         {
             e.Cancel = Console.KeyAvailable && Console.ReadKey().Key == ConsoleKey.Escape;
         }
 
-        private static void Ditador_OnCartelaEnded(object sender, EventArgs e)
+        private static void Ditador_OnCartelaEnded(object sender, CancelEventArgs e)
         {
-            Console.WriteLine("Digite espaço para próxima cartela ou esq para parar");
+            Console.WriteLine("Digite espaço para próxima cartela ou esc para parar");
             ConsoleKey key;
             do
             {
                 key = Console.ReadKey().Key;
             } while (key != ConsoleKey.Spacebar && key != ConsoleKey.Escape);
+            e.Cancel = key == ConsoleKey.Escape;
         }
 
         private static string InterpretarContarOcorrencias(List<string> parametros)
@@ -144,7 +146,7 @@ namespace LotoFacilAnalyzer
             {
                 Console.WriteLine($"{menorOcorrencia.key} não saiu {menorOcorrencia.Count} vezes");
             }
-            return $"{menoresOcorrencias.Count()} ocorrências retornadas";
+            return string.Empty;
         }
 
         private static string InterpretarForcaBruta(List<string> parametros)
@@ -194,35 +196,36 @@ namespace LotoFacilAnalyzer
             {
                 case "concurso":
                     Console.WriteLine("Lista de concursos");
-                    Console.WriteLine("|Data\t\t|Numero\t|Bolas\t|");
+                    Console.WriteLine("|Data      |Número|Bolas                                     |");
                     foreach (var item in _concursos)
                     {
                         var bolas = string.Join(",", item.Bolas.Select(x => x.ToString()));
-                        Console.WriteLine("|{0}\t|{1}\t|{2}\t|", item.Data.ToShortDateString(), item.Numero, bolas);
+                        Console.WriteLine("|{0}|{1}|{2}|", 
+                            item.Data.ToShortDateString().PadLeft(10, ' '),
+                            item.Numero.ToString().PadLeft(6, ' '),
+                            bolas.PadRight(42, ' '));
                     }
-                    return "Fim da lista";
-
+                    break;
                 case "jogo":
                     Console.WriteLine("Lista de jogos");
-                    Console.WriteLine("|Número do jogo\t|Bolas\t|");
+                    Console.WriteLine("|Número do jogo|Bolas                                     |");
                     int i = 1;
                     foreach (var item in _jogos)
                     {
                         var jogo = item.ToArray();
                         var bolas = string.Join(",", jogo.Select(x => x.ToString()));
-                        Console.WriteLine("|{0}\t|{1}\t|", i++, bolas);
+                        Console.WriteLine("|{0}|{1}|", (i++).ToString().PadLeft(14, ' '), bolas.PadRight(42, ' '));
                     }
-                    return "Fim da lista";
-
+                    break;
                 case "calculo":
                 default:
                     Console.WriteLine("Lista de cálculos");
-                    Console.WriteLine("|Data\t|Número\t|Pontos\t|Ganho\t|Gasto\t|Saldo\t|Bolas sorteadas\t|Bolas jogadas\t|");
+                    Console.WriteLine("|Data      |Número|Pontos|          Ganho|          Gasto|          Saldo|Bolas sorteadas                           |Bolas jogadas                             |");
 
                     foreach (var item in _linhas)
                     {
                         var bolasSorteadas = item.N1Jogo == 0
-                            ? "-"
+                            ? "-".PadRight(42, ' ')
                             : string.Concat(item.N1Jogo, ",",
                             item.N2Jogo, ",",
                             item.N3Jogo, ",",
@@ -240,7 +243,7 @@ namespace LotoFacilAnalyzer
                             item.N15Jogo);
 
                         var bolasJogadas = item.N1Resultado == 0
-                          ? "-"
+                          ? "-".PadRight(42, ' ')
                           : string.Concat(item.N1Resultado, ",",
                           item.N2Resultado, ",",
                           item.N3Resultado, ",",
@@ -257,18 +260,19 @@ namespace LotoFacilAnalyzer
                           item.N14Resultado, ",",
                           item.N15Resultado);
 
-                        Console.WriteLine("|{0}\t|{1}\t|{2}\t|{3:C2}\t|{4:C2}\t|{5:C2}\t|{6}\t|{7}\t|",
-                            item.DataConcurso.ToShortDateString(),
-                            item.NumeroConcurso,
-                            item.Pontos,
-                            item.Ganho,
-                            item.Gasto,
-                            item.Saldo,
-                            bolasSorteadas,
-                            bolasJogadas);
+                        Console.WriteLine("|{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
+                            item.DataConcurso.ToShortDateString().PadLeft(10, ' '),
+                            item.NumeroConcurso.ToString().PadLeft(6, ' '),
+                            item.Pontos.ToString().PadLeft(6, ' '),
+                            item.Ganho.ToString("C2").PadLeft(15, ' '),
+                            item.Gasto.ToString("C2").PadLeft(15, ' '),
+                            item.Saldo.ToString("C2").PadLeft(15, ' '),
+                            bolasSorteadas.PadRight(42, ' '),
+                            bolasJogadas.PadRight(42, ' '));
                     }
-                    return "Fim da lista";
+                    break;
             }
+            return string.Empty;
         }
 
         private static string InterpretarExportar(List<string> parametros)
